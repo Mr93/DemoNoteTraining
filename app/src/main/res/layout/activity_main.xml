@@ -16,24 +16,25 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/colorAccent"
             app:popupTheme="@style/AppTheme.PopupOverlay">
+
             <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:src="@color/colorAccent"/>
-            </android.support.v7.widget.Toolbar>
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginRight="@dimen/margin_recycler_view"
+                android:src="@drawable/icon_note"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/app_name"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/text_size_title"/>
+
+        </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>
 
     <include layout="@layout/content_main"/>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_new_note"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_menu_add"/>
 
 </android.support.design.widget.CoordinatorLayout>

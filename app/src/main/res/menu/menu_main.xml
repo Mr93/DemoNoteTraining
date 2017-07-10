@@ -3,8 +3,9 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context="com.example.anhnd2.demonotetraining.activities.MainActivity">
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/menu_add_note"
         android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never"/>
+        android:title="@string/menu_add_note"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_add_white_24dp"/>
 </menu>
