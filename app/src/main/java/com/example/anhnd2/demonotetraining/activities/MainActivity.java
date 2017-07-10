@@ -22,7 +22,6 @@ import com.example.anhnd2.demonotetraining.presenters.MainPresenter;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, MvpMain.RequiredView {
 
 	public static final String TAG = MainActivity.class.getSimpleName();
-	private FloatingActionButton fabNewNote;
 	private MvpMain.ProvidedPresenter presenter;
 	private NoteAdapter noteAdapter;
 	private RecyclerView recyclerView;
@@ -48,7 +47,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
-		if (id == R.id.action_settings) {
+		if (id == R.id.menu_add_note) {
+			startActivity(EditActivity.getStartIntent(this));
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -57,8 +57,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	@Override
 	public void onClick(View view) {
 		switch (view.getId()) {
-			case R.id.fab_new_note:
-				break;
 			default:
 				break;
 		}
@@ -70,14 +68,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	}
 
 	private void initView() {
-		fabNewNote = (FloatingActionButton) findViewById(R.id.fab_new_note);
-		fabNewNote.setOnClickListener(this);
 		noteAdapter = new NoteAdapter(presenter.getNoteItemList());
 		recyclerView = (RecyclerView) findViewById(R.id.recycler_view_main);
 		RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 2);
 		recyclerView.setLayoutManager(layoutManager);
-		Log.d(TAG, "initView: aaaa");
-		Log.d(TAG, "initView: " + presenter.getNoteItemList());
 		recyclerView.setAdapter(noteAdapter);
 	}
 }

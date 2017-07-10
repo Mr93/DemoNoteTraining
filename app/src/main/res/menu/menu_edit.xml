@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:context="com.example.anhnd2.demonotetraining.activities.EditActivity">
+
+    <item
+        android:id="@+id/menu_capture"
+        android:orderInCategory="100"
+        android:title="@string/menu_capture"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_photo_camera_white_24dp"/>
+
+    <item
+        android:id="@+id/menu_chose_color"
+        android:orderInCategory="100"
+        android:title="@string/menu_chose_color"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_color_lens_white_24dp"/>
+
+    <item
+        android:id="@+id/menu_save"
+        android:orderInCategory="100"
+        android:title="@string/menu_save"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_check_white_24dp"/>
+</menu>

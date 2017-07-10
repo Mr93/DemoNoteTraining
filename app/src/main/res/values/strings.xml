@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">DemoNoteTraining</string>
     <string name="menu_add_note">Add note</string>
+    <string name="alarm">Alarm</string>
+    <string name="default_content">Note</string>
+    <string name="default_title">Title</string>
+    <string name="menu_capture">Capture</string>
+    <string name="menu_chose_color">Chose color</string>
+    <string name="menu_save">Save</string>
 </resources>
