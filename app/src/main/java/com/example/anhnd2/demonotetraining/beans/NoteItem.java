@@ -18,11 +18,12 @@ import java.util.List;
 
 public class NoteItem implements Parcelable {
 
-	public String title;
-	public String content;
-	public Date createdTime;
-	public int colorId;
-	public List<Bitmap> bitmapList;
+	public int id = -1;
+	public String title = MyApplication.getContext().getString(R.string.default_title);
+	public String content = MyApplication.getContext().getString(R.string.default_content);
+	public Date createdTime = new Date(System.currentTimeMillis());
+	public int colorId = MyApplication.getContext().getResources().getColor(R.color.colorYellow);
+	public List<String> bitmapPathList;
 	public Date alarmTime;
 
 
@@ -35,7 +36,6 @@ public class NoteItem implements Parcelable {
 		this.content = content;
 		this.createdTime = createdTime;
 		this.alarmTime = alarmTime;
-		this.colorId = MyApplication.getContext().getResources().getColor(R.color.colorYellow);
 	}
 
 	@Override
@@ -45,21 +45,23 @@ public class NoteItem implements Parcelable {
 
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeInt(this.id);
 		dest.writeString(this.title);
 		dest.writeString(this.content);
 		dest.writeLong(this.createdTime != null ? this.createdTime.getTime() : -1);
 		dest.writeInt(this.colorId);
-		dest.writeTypedList(this.bitmapList);
+		dest.writeStringList(this.bitmapPathList);
 		dest.writeLong(this.alarmTime != null ? this.alarmTime.getTime() : -1);
 	}
 
 	protected NoteItem(Parcel in) {
+		this.id = in.readInt();
 		this.title = in.readString();
 		this.content = in.readString();
 		long tmpCreatedTime = in.readLong();
 		this.createdTime = tmpCreatedTime == -1 ? null : new Date(tmpCreatedTime);
 		this.colorId = in.readInt();
-		this.bitmapList = in.createTypedArrayList(Bitmap.CREATOR);
+		this.bitmapPathList = in.createStringArrayList();
 		long tmpAlarmTime = in.readLong();
 		this.alarmTime = tmpAlarmTime == -1 ? null : new Date(tmpAlarmTime);
 	}
