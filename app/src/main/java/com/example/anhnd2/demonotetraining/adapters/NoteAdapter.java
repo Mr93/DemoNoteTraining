@@ -10,7 +10,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.anhnd2.demonotetraining.R;
+import com.example.anhnd2.demonotetraining.activities.EditActivity;
 import com.example.anhnd2.demonotetraining.beans.NoteItem;
+import com.example.anhnd2.demonotetraining.utils.Utils;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -37,9 +39,8 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteHolder> {
 
 	@Override
 	public void onBindViewHolder(NoteHolder holder, int position) {
-		NoteItem noteItem = noteItemList.get(position);
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/mm hh:mm");
-		holder.txtCreatedDate.setText(simpleDateFormat.format(noteItem.createdTime));
+		final NoteItem noteItem = noteItemList.get(position);
+		holder.txtCreatedDate.setText(Utils.formatDateTimeString(noteItem.createdTime));
 		holder.txtTitle.setText(noteItem.title);
 		holder.txtContent.setText(noteItem.content);
 		if (noteItem.alarmTime != null) {
@@ -52,7 +53,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteHolder> {
 		holder.layoutContainter.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				Log.d(TAG, "onClick: " + view.getId());
+				view.getContext().startActivity(EditActivity.getStartIntent(view.getContext(), noteItem));
 			}
 		});
 	}
@@ -60,6 +61,10 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteHolder> {
 	@Override
 	public int getItemCount() {
 		return noteItemList.size();
+	}
+
+	public void setNoteItemList(List<NoteItem> noteItemList) {
+		this.noteItemList = noteItemList;
 	}
 
 	public class NoteHolder extends RecyclerView.ViewHolder {

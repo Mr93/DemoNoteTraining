@@ -77,4 +77,25 @@ public class NoteItem implements Parcelable {
 			return new NoteItem[size];
 		}
 	};
+
+	@Override
+	public String toString() {
+		return "NoteItem{" +
+				"id=" + id +
+				", title='" + title + '\'' +
+				", content='" + content + '\'' +
+				", createdTime=" + createdTime +
+				", colorId=" + colorId +
+				", bitmapPathList=" + bitmapPathList +
+				", alarmTime=" + alarmTime +
+				'}';
+	}
+
+	public void parseData(NoteItem noteItem){
+		this.title = noteItem.title;
+		this.content = noteItem.content;
+		this.colorId = noteItem.colorId;
+		this.bitmapPathList = noteItem.bitmapPathList;
+		this.alarmTime = noteItem.alarmTime;
+	}
 }

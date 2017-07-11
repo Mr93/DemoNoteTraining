@@ -11,19 +11,19 @@ import java.util.List;
 public interface MvpMain {
 
 	interface RequiredPresenter {
-
+		void onNoteListLoaded(List<NoteItem> noteItemList);
 	}
 
 	interface RequiredView {
-
+		void displayNoteList(List<NoteItem> noteItemList);
 	}
 
 	interface ProvidedModel {
-
+		void getNoteItemList();
 	}
 
 	interface ProvidedPresenter {
-		List<NoteItem> getNoteItemList();
+		void getNoteItemList();
 
 		void setView(RequiredView requiredView);
 

@@ -8,9 +8,11 @@
     tools:context="com.example.anhnd2.demonotetraining.activities.EditActivity">
 
     <LinearLayout
+        android:id="@+id/ll_contain_all"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="?attr/actionBarSize"
+        android:background="@color/colorAccent"
         android:orientation="vertical"
         android:padding="@dimen/padding_note_item">
 
@@ -84,6 +86,7 @@
                     android:text="Aug 20, 2012"/>
 
                 <ImageView
+                    android:id="@+id/img_hide_date_time_picker"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:clickable="true"

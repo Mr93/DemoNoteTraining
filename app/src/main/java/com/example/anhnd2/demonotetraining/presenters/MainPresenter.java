@@ -21,12 +21,12 @@ public class MainPresenter implements MvpMain.ProvidedPresenter, MvpMain.Require
 	public MainPresenter(MvpMain.RequiredView requiredView) {
 		this.viewWeakReference = new WeakReference<MvpMain.RequiredView>(requiredView);
 		noteItemList = new ArrayList<>();
-		addTestList();
+		//addTestList();
 	}
 
 	@Override
-	public List<NoteItem> getNoteItemList() {
-		return noteItemList;
+	public void getNoteItemList() {
+		providedModel.getNoteItemList();
 	}
 
 	@Override
@@ -37,6 +37,11 @@ public class MainPresenter implements MvpMain.ProvidedPresenter, MvpMain.Require
 	@Override
 	public void setModel(MvpMain.ProvidedModel providedModel) {
 		this.providedModel = providedModel;
+	}
+
+	@Override
+	public void onNoteListLoaded(List<NoteItem> noteItemList) {
+		getView().displayNoteList(noteItemList);
 	}
 
 	private MvpMain.RequiredView getView() throws NullPointerException {

@@ -53,6 +53,7 @@ public class DbHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.execSQL(
 				"create table " + NOTE_TABLE_NAME +
 						" (" + NOTE_COLUMN_ID + " integer primary key, "
+						+ NOTE_COLUMN_TITLE + " text, "
 						+ NOTE_COLUMN_CONTENT + " text, "
 						+ NOTE_COLUMN_CREATED_TIME + " text, "
 						+ NOTE_COLUMN_COLOR_ID + " integer, "
