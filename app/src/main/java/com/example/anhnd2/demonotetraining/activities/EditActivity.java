@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,7 +14,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.anhnd2.demonotetraining.R;
 import com.example.anhnd2.demonotetraining.beans.NoteItem;
@@ -27,13 +27,14 @@ import java.text.SimpleDateFormat;
 
 public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredView, View.OnClickListener {
 
+	public static final String TAG = EditActivity.class.getSimpleName();
 	private static String EXTRA_NOTE_ID = "extra_note_id";
 	private static String EXTRA_NOTE_ITEM = "extra_note_item";
 	private MvpEdit.ProvidedPresenter providedPresenter;
 	private TextView txtCreatedTime, txtAlarm, txtDatePicker, txtTimePicker;
 	private EditText editTextTitle, editTextContent;
-	private LinearLayout llDateTimePickerContainer, llContainAll;
-	private ImageView imgHideDateTimePicker;
+	private LinearLayout llDateTimePickerContainer, llContainAll, llBottomNavigationBar;
+	private ImageView imgHideDateTimePicker, imgBack, imgForward, imgDelete, imgShare;
 
 	public static Intent getStartIntent(Context context) {
 		Intent intent = new Intent(context, EditActivity.class);
@@ -58,6 +59,7 @@ public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredV
 		setContentView(R.layout.activity_edit);
 		setupMvp();
 		initView();
+		initBottomNavigationBar();
 		getDataFromPresenter();
 	}
 
@@ -70,6 +72,10 @@ public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredV
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.menu_edit, menu);
+		if (llBottomNavigationBar.getVisibility() == View.GONE){
+			MenuItem item = menu.findItem(R.id.menu_add_note);
+			item.setVisible(false);
+		}
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -106,6 +112,18 @@ public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredV
 				break;
 			case R.id.time_picker:
 				break;
+			case R.id.image_back_edit_note:
+				providedPresenter.loadPreviousNote();
+				break;
+			case R.id.image_forward_edit_note:
+				providedPresenter.loadNextNote();
+				break;
+			case R.id.image_delete_edit_note:
+				providedPresenter.deleteNoteById();
+				break;
+			case R.id.image_share_edit_note:
+				shareNote();
+				break;
 			default:
 				break;
 		}
@@ -124,13 +142,39 @@ public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredV
 			txtTimePicker.setText(dateFormat.format(noteItem.alarmTime));
 		}
 		llContainAll.setEnabled(true);
-		initEditTextContent();
-		initEditTextTitle();
+		addTextWatcherForEditTextContent();
+		addTextWatcherForEditTextTitle();
 	}
 
 	@Override
 	public void noteUpdated() {
 //		Toast.makeText(this, "Note saved", Toast.LENGTH_SHORT).show();
+	}
+
+	@Override
+	public void noteDeleted() {
+		finish();
+	}
+
+	@Override
+	public void disableBackButton() {
+		if (imgBack != null){
+			imgBack.setEnabled(false);
+			imgBack.setAlpha(50);
+		}
+	}
+
+	@Override
+	public void disableForwardButton() {
+		if (imgForward != null){
+			imgForward.setEnabled(false);
+			imgForward.setAlpha(50);
+		}
+	}
+
+	@Override
+	public Context getActivityContext() {
+		return this;
 	}
 
 	private void setupMvp() {
@@ -155,7 +199,37 @@ public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredV
 		editTextContent = (EditText) findViewById(R.id.edit_text_content_edit_activity);
 	}
 
-	private void initEditTextContent() {
+	private void initBottomNavigationBar(){
+		llBottomNavigationBar = (LinearLayout) findViewById(R.id.ll_bottom_navigation_bar);
+		imgBack = (ImageView) findViewById(R.id.image_back_edit_note);
+		imgBack.setOnClickListener(this);
+		imgForward = (ImageView) findViewById(R.id.image_forward_edit_note);
+		imgForward.setOnClickListener(this);
+		imgDelete = (ImageView) findViewById(R.id.image_delete_edit_note);
+		imgDelete.setOnClickListener(this);
+		imgShare = (ImageView) findViewById(R.id.image_share_edit_note);
+		imgShare.setOnClickListener(this);
+	}
+
+	private void getDataFromPresenter() {
+		if (getIntent() != null && getIntent().getParcelableExtra(EXTRA_NOTE_ITEM) != null) {
+			displayData((NoteItem) getIntent().getParcelableExtra(EXTRA_NOTE_ITEM));
+			providedPresenter.setNoteItemData((NoteItem) getIntent().getParcelableExtra(EXTRA_NOTE_ITEM));
+			providedPresenter.loadListDataForPresenter();
+		} else {
+			providedPresenter.createNewNote();
+			llBottomNavigationBar.setVisibility(View.GONE);
+		}
+	}
+
+	private void shareNote(){
+		Intent intent = new Intent(Intent.ACTION_SEND);
+		intent.setType("text/plain");
+		intent.putExtra(Intent.EXTRA_TEXT, editTextTitle.getText() + "\n" + editTextContent.getText());
+		startActivity(Intent.createChooser(intent, getString(R.string.share)));
+	}
+
+	private void addTextWatcherForEditTextContent() {
 		editTextContent.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -174,7 +248,7 @@ public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredV
 		});
 	}
 
-	private void initEditTextTitle() {
+	private void addTextWatcherForEditTextTitle() {
 		editTextTitle.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -194,14 +268,5 @@ public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredV
 	}
 
 
-	private void getDataFromPresenter() {
-		if (getIntent() != null && getIntent().getIntExtra(EXTRA_NOTE_ID, -1) != -1) {
-			providedPresenter.getNoteById(getIntent().getIntExtra(EXTRA_NOTE_ID, -1));
-		} else if (getIntent() != null && getIntent().getParcelableExtra(EXTRA_NOTE_ITEM) != null) {
-			displayData((NoteItem) getIntent().getParcelableExtra(EXTRA_NOTE_ITEM));
-			providedPresenter.setNoteItemData((NoteItem) getIntent().getParcelableExtra(EXTRA_NOTE_ITEM));
-		} else {
-			providedPresenter.createNewNote();
-		}
-	}
+
 }

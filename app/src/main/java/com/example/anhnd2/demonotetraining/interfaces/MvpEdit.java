@@ -1,5 +1,7 @@
 package com.example.anhnd2.demonotetraining.interfaces;
 
+import android.content.Context;
+
 import com.example.anhnd2.demonotetraining.beans.NoteItem;
 
 import java.util.Date;
@@ -18,10 +20,6 @@ public interface MvpEdit {
 
 		void createNewNote();
 
-		void getNoteById(int id);
-
-		void updateNote(NoteItem noteItem);
-
 		void updateTitle(String title);
 
 		void updateContent(String content);
@@ -37,6 +35,14 @@ public interface MvpEdit {
 		void forceSave();
 
 		void setNoteItemData(NoteItem noteItemData);
+
+		void deleteNoteById();
+
+		void loadListDataForPresenter();
+
+		void loadNextNote();
+
+		void loadPreviousNote();
 	}
 
 	interface ProvidedModel {
@@ -45,6 +51,10 @@ public interface MvpEdit {
 		void getNoteById(int id);
 
 		void saveNote(NoteItem noteItem);
+
+		void deleteNote(NoteItem noteItem);
+
+		void loadListDataForPresenter();
 	}
 
 	interface RequiredPresenter {
@@ -53,12 +63,24 @@ public interface MvpEdit {
 		void onNoteFetched(NoteItem noteItem);
 
 		void onNoteUpdated();
+
+		void onNoteDeleted();
+
+		void onNoteListLoaded(List<NoteItem> noteItemList);
 	}
 
 	interface RequiredView {
 		void displayData(NoteItem noteItem);
 
 		void noteUpdated();
+
+		void noteDeleted();
+
+		void disableBackButton();
+
+		void disableForwardButton();
+
+		Context getActivityContext();
 	}
 
 }

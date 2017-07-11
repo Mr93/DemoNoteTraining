@@ -1,7 +1,10 @@
 package com.example.anhnd2.demonotetraining.presenters;
 
+import android.app.Activity;
+import android.content.Context;
 import android.util.Log;
 
+import com.example.anhnd2.demonotetraining.activities.EditActivity;
 import com.example.anhnd2.demonotetraining.beans.NoteItem;
 import com.example.anhnd2.demonotetraining.interfaces.MvpEdit;
 
@@ -19,6 +22,7 @@ public class EditPresenter implements MvpEdit.ProvidedPresenter, MvpEdit.Require
 	private WeakReference<MvpEdit.RequiredView> viewWeakReference;
 	private MvpEdit.ProvidedModel model;
 	private NoteItem noteItem;
+	private List<NoteItem> noteItemList;
 	private long lastTimeUpdate = 0;
 	private final long WAITING_TIME = 0;
 	private boolean isDataChanged = false;
@@ -61,14 +65,20 @@ public class EditPresenter implements MvpEdit.ProvidedPresenter, MvpEdit.Require
 	}
 
 	@Override
-	public void getNoteById(int id) {
-
+	public void onNoteDeleted() {
+		getView().noteDeleted();
 	}
 
 	@Override
-	public void updateNote(NoteItem noteItem) {
-		this.noteItem.parseData(noteItem);
-		isDataChanged = true;
+	public void onNoteListLoaded(List<NoteItem> noteItemList) {
+		this.noteItemList = noteItemList;
+		Log.d(TAG, "onNoteListLoaded: " + this.noteItemList.toString());
+		Log.d(TAG, "onNoteListLoaded: " + this.noteItem.toString());
+		if (this.noteItemList.get(0).id == this.noteItem.id){
+			getView().disableBackButton();
+		}else if (this.noteItemList.get(this.noteItemList.size() - 1).id == this.noteItem.id){
+			getView().disableForwardButton();
+		}
 	}
 
 	@Override
@@ -123,6 +133,40 @@ public class EditPresenter implements MvpEdit.ProvidedPresenter, MvpEdit.Require
 	@Override
 	public void setNoteItemData(NoteItem noteItemData) {
 		this.noteItem = noteItemData;
+	}
+
+	@Override
+	public void deleteNoteById() {
+		model.deleteNote(this.noteItem);
+	}
+
+	@Override
+	public void loadListDataForPresenter() {
+		model.loadListDataForPresenter();
+	}
+
+	@Override
+	public void loadNextNote() {
+		for (int i = 0; i < this.noteItemList.size(); i++){
+			if (this.noteItem.id == this.noteItemList.get(i).id){
+				Context context = getView().getActivityContext();
+				context.startActivity(EditActivity.getStartIntent(context, this.noteItemList.get(i+1)));
+				((Activity) context).finish();
+				break;
+			}
+		}
+	}
+
+	@Override
+	public void loadPreviousNote() {
+		for (int i = 0; i < this.noteItemList.size(); i++){
+			if (this.noteItem.id == this.noteItemList.get(i).id){
+				Context context = getView().getActivityContext();
+				context.startActivity(EditActivity.getStartIntent(context, this.noteItemList.get(i-1)));
+				((Activity) context).finish();
+				break;
+			}
+		}
 	}
 
 	private MvpEdit.RequiredView getView() throws NullPointerException{

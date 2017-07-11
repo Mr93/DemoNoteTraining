@@ -8,6 +8,8 @@ import com.example.anhnd2.demonotetraining.beans.NoteItem;
 import com.example.anhnd2.demonotetraining.interfaces.MvpEdit;
 import com.example.anhnd2.demonotetraining.utils.DbHelper;
 
+import java.util.List;
+
 /**
  * Created by anhnd2 on 7/11/2017.
  */
@@ -58,6 +60,40 @@ public class EditModel implements MvpEdit.ProvidedModel {
 			protected void onPostExecute(Void aVoid) {
 				super.onPostExecute(aVoid);
 				presenter.onNoteUpdated();
+			}
+		}.execute();
+	}
+
+	@Override
+	public void deleteNote(final NoteItem noteItem) {
+		new AsyncTask<Void, Void, Integer>() {
+			@Override
+			protected Integer doInBackground(Void... voids) {
+				return DbHelper.getInstance(MyApplication.getContext()).deleteNote(noteItem);
+			}
+
+			@Override
+			protected void onPostExecute(Integer integer) {
+				super.onPostExecute(integer);
+				if (integer > 0){
+					presenter.onNoteDeleted();
+				}
+			}
+		}.execute();
+	}
+
+	@Override
+	public void loadListDataForPresenter() {
+		new AsyncTask<Void, Void , List<NoteItem>>() {
+			@Override
+			protected List<NoteItem> doInBackground(Void... voids) {
+				return DbHelper.getInstance(MyApplication.getContext()).getAllNotes();
+			}
+
+			@Override
+			protected void onPostExecute(List<NoteItem> noteItemList) {
+				super.onPostExecute(noteItemList);
+				presenter.onNoteListLoaded(noteItemList);
 			}
 		}.execute();
 	}
