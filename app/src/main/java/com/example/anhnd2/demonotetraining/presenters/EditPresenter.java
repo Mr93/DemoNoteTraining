@@ -25,7 +25,7 @@ public class EditPresenter implements MvpEdit.ProvidedPresenter, MvpEdit.Require
 	private List<NoteItem> noteItemList;
 	private long lastTimeUpdate = 0;
 	private final long WAITING_TIME = 0;
-	private boolean isDataChanged = false;
+	private boolean needSave = false;
 
 	public EditPresenter(MvpEdit.RequiredView requiredView) {
 		this.viewWeakReference = new WeakReference<MvpEdit.RequiredView>(requiredView);
@@ -61,7 +61,7 @@ public class EditPresenter implements MvpEdit.ProvidedPresenter, MvpEdit.Require
 	@Override
 	public void onNoteUpdated() {
 		getView().noteUpdated();
-		isDataChanged = false;
+		needSave = false;
 	}
 
 	@Override
@@ -74,10 +74,15 @@ public class EditPresenter implements MvpEdit.ProvidedPresenter, MvpEdit.Require
 		this.noteItemList = noteItemList;
 		Log.d(TAG, "onNoteListLoaded: " + this.noteItemList.toString());
 		Log.d(TAG, "onNoteListLoaded: " + this.noteItem.toString());
-		if (this.noteItemList.get(0).id == this.noteItem.id){
+		if (this.noteItemList.size() == 1) {
 			getView().disableBackButton();
-		}else if (this.noteItemList.get(this.noteItemList.size() - 1).id == this.noteItem.id){
 			getView().disableForwardButton();
+		} else {
+			if (this.noteItemList.get(0).id == this.noteItem.id) {
+				getView().disableBackButton();
+			} else if (this.noteItemList.get(this.noteItemList.size() - 1).id == this.noteItem.id) {
+				getView().disableForwardButton();
+			}
 		}
 	}
 
@@ -113,19 +118,18 @@ public class EditPresenter implements MvpEdit.ProvidedPresenter, MvpEdit.Require
 
 	@Override
 	public void saveData() {
-		isDataChanged = true;
-		if(System.currentTimeMillis() - lastTimeUpdate > WAITING_TIME){
+		needSave = true;
+		if (System.currentTimeMillis() - lastTimeUpdate > WAITING_TIME) {
 			model.saveNote(this.noteItem);
 			lastTimeUpdate = System.currentTimeMillis();
 		}
-
 	}
 
 	@Override
 	public void forceSave() {
 		Log.d(TAG, "forceSave: " + this.noteItem);
-		Log.d(TAG, "forceSave: " + isDataChanged);
-		if (isDataChanged){
+		Log.d(TAG, "forceSave: " + needSave);
+		if (needSave) {
 			model.saveNote(this.noteItem);
 		}
 	}
@@ -137,6 +141,7 @@ public class EditPresenter implements MvpEdit.ProvidedPresenter, MvpEdit.Require
 
 	@Override
 	public void deleteNoteById() {
+		needSave = false;
 		model.deleteNote(this.noteItem);
 	}
 
@@ -147,10 +152,10 @@ public class EditPresenter implements MvpEdit.ProvidedPresenter, MvpEdit.Require
 
 	@Override
 	public void loadNextNote() {
-		for (int i = 0; i < this.noteItemList.size(); i++){
-			if (this.noteItem.id == this.noteItemList.get(i).id){
+		for (int i = 0; i < this.noteItemList.size(); i++) {
+			if (this.noteItem.id == this.noteItemList.get(i).id) {
 				Context context = getView().getActivityContext();
-				context.startActivity(EditActivity.getStartIntent(context, this.noteItemList.get(i+1)));
+				context.startActivity(EditActivity.getStartIntent(context, this.noteItemList.get(i + 1)));
 				((Activity) context).finish();
 				break;
 			}
@@ -159,20 +164,20 @@ public class EditPresenter implements MvpEdit.ProvidedPresenter, MvpEdit.Require
 
 	@Override
 	public void loadPreviousNote() {
-		for (int i = 0; i < this.noteItemList.size(); i++){
-			if (this.noteItem.id == this.noteItemList.get(i).id){
+		for (int i = 0; i < this.noteItemList.size(); i++) {
+			if (this.noteItem.id == this.noteItemList.get(i).id) {
 				Context context = getView().getActivityContext();
-				context.startActivity(EditActivity.getStartIntent(context, this.noteItemList.get(i-1)));
+				context.startActivity(EditActivity.getStartIntent(context, this.noteItemList.get(i - 1)));
 				((Activity) context).finish();
 				break;
 			}
 		}
 	}
 
-	private MvpEdit.RequiredView getView() throws NullPointerException{
-		if(viewWeakReference != null){
+	private MvpEdit.RequiredView getView() throws NullPointerException {
+		if (viewWeakReference != null) {
 			return viewWeakReference.get();
-		}else {
+		} else {
 			throw new NullPointerException("View is unavailable");
 		}
 	}

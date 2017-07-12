@@ -22,6 +22,6 @@ public class Utils {
 	}
 
 	public static String formatDateTimeString(Date date){
-		return (new SimpleDateFormat("dd/mm hh:mm")).format(date);
+		return (new SimpleDateFormat("dd/MM hh:mm")).format(date);
 	}
 }

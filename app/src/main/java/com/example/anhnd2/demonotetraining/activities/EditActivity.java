@@ -1,21 +1,28 @@
 package com.example.anhnd2.demonotetraining.activities;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.example.anhnd2.demonotetraining.R;
+import com.example.anhnd2.demonotetraining.adapters.ChoseColorAdapter;
+import com.example.anhnd2.demonotetraining.adapters.ShowImageOfNoteAdapter;
 import com.example.anhnd2.demonotetraining.beans.NoteItem;
 import com.example.anhnd2.demonotetraining.interfaces.MvpEdit;
 import com.example.anhnd2.demonotetraining.models.EditModel;
@@ -33,8 +40,11 @@ public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredV
 	private MvpEdit.ProvidedPresenter providedPresenter;
 	private TextView txtCreatedTime, txtAlarm, txtDatePicker, txtTimePicker;
 	private EditText editTextTitle, editTextContent;
-	private LinearLayout llDateTimePickerContainer, llContainAll, llBottomNavigationBar;
+	private LinearLayout llDateTimePickerContainer, llBottomNavigationBar;
 	private ImageView imgHideDateTimePicker, imgBack, imgForward, imgDelete, imgShare;
+	private ScrollView scrollViewContainContent;
+	private GridView gridViewImageForNote;
+	private ShowImageOfNoteAdapter showImageOfNoteAdapter;
 
 	public static Intent getStartIntent(Context context) {
 		Intent intent = new Intent(context, EditActivity.class);
@@ -66,13 +76,14 @@ public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredV
 	@Override
 	protected void onStop() {
 		super.onStop();
+		Log.d(TAG, "onStop: ");
 		providedPresenter.forceSave();
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.menu_edit, menu);
-		if (llBottomNavigationBar.getVisibility() == View.GONE){
+		if (llBottomNavigationBar.getVisibility() == View.GONE) {
 			MenuItem item = menu.findItem(R.id.menu_add_note);
 			item.setVisible(false);
 		}
@@ -85,11 +96,13 @@ public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredV
 			case R.id.menu_capture:
 				break;
 			case R.id.menu_chose_color:
+				showChoseColorDialog();
 				break;
 			case R.id.menu_save:
 				providedPresenter.forceSave();
 				break;
 			case R.id.menu_add_note:
+				createNewNote();
 				break;
 			default:
 				break;
@@ -134,20 +147,25 @@ public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredV
 		editTextTitle.setText(noteItem.title);
 		editTextContent.setText(noteItem.content);
 		txtCreatedTime.setText(Utils.formatDateTimeString(noteItem.createdTime));
-		llContainAll.setBackgroundColor(noteItem.colorId);
+		scrollViewContainContent.setBackgroundColor(noteItem.colorId);
 		if (noteItem.alarmTime != null) {
 			DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 			txtDatePicker.setText(dateFormat.format(noteItem.alarmTime));
 			dateFormat = new SimpleDateFormat("hh:mm");
 			txtTimePicker.setText(dateFormat.format(noteItem.alarmTime));
 		}
-		llContainAll.setEnabled(true);
+		if (noteItem.bitmapPathList != null){
+			showImageOfNoteAdapter.setListImagePath(noteItem.bitmapPathList);
+			showImageOfNoteAdapter.notifyDataSetChanged();
+		}
+		scrollViewContainContent.setEnabled(true);
 		addTextWatcherForEditTextContent();
 		addTextWatcherForEditTextTitle();
 	}
 
 	@Override
 	public void noteUpdated() {
+
 //		Toast.makeText(this, "Note saved", Toast.LENGTH_SHORT).show();
 	}
 
@@ -158,7 +176,7 @@ public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredV
 
 	@Override
 	public void disableBackButton() {
-		if (imgBack != null){
+		if (imgBack != null) {
 			imgBack.setEnabled(false);
 			imgBack.setAlpha(50);
 		}
@@ -166,7 +184,7 @@ public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredV
 
 	@Override
 	public void disableForwardButton() {
-		if (imgForward != null){
+		if (imgForward != null) {
 			imgForward.setEnabled(false);
 			imgForward.setAlpha(50);
 		}
@@ -190,16 +208,19 @@ public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredV
 		txtDatePicker.setOnClickListener(this);
 		txtTimePicker = (TextView) findViewById(R.id.time_picker);
 		txtTimePicker.setOnClickListener(this);
-		llContainAll = (LinearLayout) findViewById(R.id.ll_contain_all);
-		llContainAll.setEnabled(false);
+		scrollViewContainContent = (ScrollView) findViewById(R.id.sv_contain_all);
+		scrollViewContainContent.setEnabled(false);
 		llDateTimePickerContainer = (LinearLayout) findViewById(R.id.layout_date_time_picker);
 		imgHideDateTimePicker = (ImageView) findViewById(R.id.img_hide_date_time_picker);
 		imgHideDateTimePicker.setOnClickListener(this);
 		editTextTitle = (EditText) findViewById(R.id.edit_text_title_edit_activity);
 		editTextContent = (EditText) findViewById(R.id.edit_text_content_edit_activity);
+		gridViewImageForNote = (GridView)findViewById(R.id.grid_view_image_edit_note);
+		showImageOfNoteAdapter = new ShowImageOfNoteAdapter(this);
+		gridViewImageForNote.setAdapter(showImageOfNoteAdapter);
 	}
 
-	private void initBottomNavigationBar(){
+	private void initBottomNavigationBar() {
 		llBottomNavigationBar = (LinearLayout) findViewById(R.id.ll_bottom_navigation_bar);
 		imgBack = (ImageView) findViewById(R.id.image_back_edit_note);
 		imgBack.setOnClickListener(this);
@@ -222,7 +243,7 @@ public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredV
 		}
 	}
 
-	private void shareNote(){
+	private void shareNote() {
 		Intent intent = new Intent(Intent.ACTION_SEND);
 		intent.setType("text/plain");
 		intent.putExtra(Intent.EXTRA_TEXT, editTextTitle.getText() + "\n" + editTextContent.getText());
@@ -267,6 +288,26 @@ public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredV
 		});
 	}
 
+	private void showChoseColorDialog() {
+		final Dialog dialog = new AppCompatDialog(this);
+		dialog.setContentView(R.layout.dialog_chose_color);
+		dialog.setTitle(getResources().getString(R.string.menu_chose_color));
+		GridView gridView = (GridView) dialog.findViewById(R.id.grid_view_color);
+		gridView.setAdapter(new ChoseColorAdapter());
+		gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+				providedPresenter.updateColor((int) adapterView.getItemIdAtPosition(i));
+				scrollViewContainContent.setBackgroundColor((int) adapterView.getItemIdAtPosition(i));
+				dialog.dismiss();
+			}
+		});
+		dialog.show();
+	}
 
+	private void createNewNote(){
+		startActivity(getStartIntent(this));
+		finish();
+	}
 
 }

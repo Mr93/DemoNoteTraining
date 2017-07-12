@@ -7,94 +7,110 @@
     android:layout_height="match_parent"
     tools:context="com.example.anhnd2.demonotetraining.activities.EditActivity">
 
-    <LinearLayout
-        android:id="@+id/ll_contain_all"
+    <ScrollView
+        android:id="@+id/sv_contain_all"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/ll_bottom_navigation_bar"
         android:background="@color/colorAccent"
-        android:orientation="vertical"
-        android:padding="@dimen/padding_note_item">
+        >
 
-        <TextView
-            android:id="@+id/text_created_date_edit_activity"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="right"
-            android:text="test"
-            android:textSize="@dimen/text_size_alarm_edit_activity"
-            />
+            android:orientation="vertical"
+            android:padding="@dimen/padding_note_item">
 
-        <EditText
-            android:id="@+id/edit_text_title_edit_activity"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/default_title"
-            android:textColor="@android:color/black"
-            android:textSize="@dimen/text_size_title_edit_activity"
-            android:textStyle="bold"
-            />
-
-        <EditText
-            android:id="@+id/edit_text_content_edit_activity"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/default_content"
-            android:textSize="@dimen/text_size_content_edit_activity"/>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/image_alarm"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_access_alarm_grey_24dp"/>
+            <GridView
+                android:id="@+id/grid_view_image_edit_note"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:numColumns="auto_fit"
+                android:stretchMode="columnWidth"/>
 
             <TextView
-                android:id="@+id/text_alarm_edit_activity"
+                android:id="@+id/text_created_date_edit_activity"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@+id/image_alarm"
-                android:paddingLeft="@dimen/padding_note_item"
-                android:text="@string/alarm"/>
+                android:gravity="right"
+                android:text="test"
+                android:textSize="@dimen/text_size_alarm_edit_activity"
+                />
 
-            <LinearLayout
-                android:id="@+id/layout_date_time_picker"
+            <EditText
+                android:id="@+id/edit_text_title_edit_activity"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@+id/image_alarm"
-                android:orientation="horizontal"
-                android:paddingLeft="@dimen/padding_note_item"
-                android:visibility="gone">
+                android:text="@string/default_title"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/text_size_title_edit_activity"
+                android:textStyle="bold"
+                />
 
-                <TextView
-                    android:id="@+id/date_picker"
-                    style="@style/Base.Widget.AppCompat.Spinner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Aug 20, 2012"/>
+            <EditText
+                android:id="@+id/edit_text_content_edit_activity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/default_content"
+                android:textSize="@dimen/text_size_content_edit_activity"/>
 
-                <TextView
-                    android:id="@+id/time_picker"
-                    style="@style/Base.Widget.AppCompat.Spinner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Aug 20, 2012"/>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
                 <ImageView
-                    android:id="@+id/img_hide_date_time_picker"
+                    android:id="@+id/image_alarm"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:clickable="true"
-                    app:srcCompat="@drawable/ic_clear_grey_24dp"/>
-            </LinearLayout>
+                    app:srcCompat="@drawable/ic_access_alarm_grey_24dp"/>
 
-        </RelativeLayout>
-    </LinearLayout>
+                <TextView
+                    android:id="@+id/text_alarm_edit_activity"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/image_alarm"
+                    android:paddingLeft="@dimen/padding_note_item"
+                    android:text="@string/alarm"/>
+
+                <LinearLayout
+                    android:id="@+id/layout_date_time_picker"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/image_alarm"
+                    android:orientation="horizontal"
+                    android:paddingLeft="@dimen/padding_note_item"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/date_picker"
+                        style="@style/Base.Widget.AppCompat.Spinner"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Aug 20, 2012"/>
+
+                    <TextView
+                        android:id="@+id/time_picker"
+                        style="@style/Base.Widget.AppCompat.Spinner"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Aug 20, 2012"/>
+
+                    <ImageView
+                        android:id="@+id/img_hide_date_time_picker"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="true"
+                        app:srcCompat="@drawable/ic_clear_grey_24dp"/>
+                </LinearLayout>
+
+            </RelativeLayout>
+        </LinearLayout>
+
+    </ScrollView>
+
 
     <LinearLayout
         android:id="@+id/ll_bottom_navigation_bar"
