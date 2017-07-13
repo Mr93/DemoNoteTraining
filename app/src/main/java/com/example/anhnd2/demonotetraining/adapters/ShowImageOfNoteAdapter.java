@@ -16,6 +16,7 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.example.anhnd2.demonotetraining.R;
+import com.example.anhnd2.demonotetraining.activities.EditActivity;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -51,7 +52,7 @@ public class ShowImageOfNoteAdapter extends BaseAdapter {
 	}
 
 	@Override
-	public View getView(int i, View view, ViewGroup viewGroup) {
+	public View getView(final int i, View view, ViewGroup viewGroup) {
 		View item;
 		if (view == null) {
 			item = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_image_grid_view_edit_note, viewGroup, false);
@@ -60,21 +61,29 @@ public class ShowImageOfNoteAdapter extends BaseAdapter {
 		}
 		ImageView imageView = item.findViewById(R.id.image_content);
 		ImageView imageViewDelete = item.findViewById(R.id.icon_delete_image);
-		final Uri uri = Uri.fromFile(new File(listImagePath.get(i)));
+		Uri uri;
+		if (listImagePath.get(i).contains("content://")) {
+			uri = Uri.parse((listImagePath.get(i)));
+		} else {
+			uri = Uri.fromFile(new File(listImagePath.get(i)));
+		}
+		Log.d(TAG, "getView: " + uri);
+		final Uri tempUri = uri;
 		Glide.with(viewGroup.getContext()).load(uri).into(imageView);
 		imageView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				Intent intent = new Intent();
 				intent.setAction(Intent.ACTION_VIEW);
-				intent.setDataAndType(uri, "image/*");
+				intent.setDataAndType(tempUri, "image/*");
 				context.startActivity(intent);
 			}
 		});
 		imageViewDelete.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				Log.d(TAG, "onClick: bbbbb");
+				((EditActivity) context).removeImage(i);
+				notifyDataSetChanged();
 			}
 		});
 		return item;

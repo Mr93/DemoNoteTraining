@@ -21,7 +21,7 @@ public class EditPresenter implements MvpEdit.ProvidedPresenter, MvpEdit.Require
 	public static final String TAG = EditPresenter.class.getSimpleName();
 	private WeakReference<MvpEdit.RequiredView> viewWeakReference;
 	private MvpEdit.ProvidedModel model;
-	private NoteItem noteItem;
+	private NoteItem currentNote;
 	private List<NoteItem> noteItemList;
 	private long lastTimeUpdate = 0;
 	private final long WAITING_TIME = 0;
@@ -44,18 +44,17 @@ public class EditPresenter implements MvpEdit.ProvidedPresenter, MvpEdit.Require
 	@Override
 	public void createNewNote() {
 		model.createNewNote();
-		Log.d(TAG, "createNewNote: " + noteItem);
 	}
 
 	@Override
 	public void onNewNoteCreated(NoteItem noteItem) {
-		this.noteItem = noteItem;
+		this.currentNote = noteItem;
 		getView().displayData(noteItem);
 	}
 
 	@Override
 	public void onNoteFetched(NoteItem noteItem) {
-		this.noteItem = noteItem;
+		this.currentNote = noteItem;
 	}
 
 	@Override
@@ -73,14 +72,14 @@ public class EditPresenter implements MvpEdit.ProvidedPresenter, MvpEdit.Require
 	public void onNoteListLoaded(List<NoteItem> noteItemList) {
 		this.noteItemList = noteItemList;
 		Log.d(TAG, "onNoteListLoaded: " + this.noteItemList.toString());
-		Log.d(TAG, "onNoteListLoaded: " + this.noteItem.toString());
+		Log.d(TAG, "onNoteListLoaded: " + this.currentNote.toString());
 		if (this.noteItemList.size() == 1) {
 			getView().disableBackButton();
 			getView().disableForwardButton();
 		} else {
-			if (this.noteItemList.get(0).id == this.noteItem.id) {
+			if (this.noteItemList.get(0).id == this.currentNote.id) {
 				getView().disableBackButton();
-			} else if (this.noteItemList.get(this.noteItemList.size() - 1).id == this.noteItem.id) {
+			} else if (this.noteItemList.get(this.noteItemList.size() - 1).id == this.currentNote.id) {
 				getView().disableForwardButton();
 			}
 		}
@@ -88,31 +87,37 @@ public class EditPresenter implements MvpEdit.ProvidedPresenter, MvpEdit.Require
 
 	@Override
 	public void updateTitle(String title) {
-		this.noteItem.title = title;
+		this.currentNote.title = title;
 		saveData();
 	}
 
 	@Override
 	public void updateContent(String content) {
-		this.noteItem.content = content;
+		this.currentNote.content = content;
 		saveData();
 	}
 
 	@Override
 	public void updateColor(int colorId) {
-		this.noteItem.colorId = colorId;
+		this.currentNote.colorId = colorId;
 		saveData();
 	}
 
 	@Override
 	public void updateImage(String imagePath) {
-		this.noteItem.bitmapPathList.add(imagePath);
+		this.currentNote.bitmapPathList.add(imagePath);
+		saveData();
+	}
+
+	@Override
+	public void removeImage(int index) {
+		this.currentNote.bitmapPathList.remove(index);
 		saveData();
 	}
 
 	@Override
 	public void updateAlarm(Date date) {
-		this.noteItem.alarmTime = date;
+		this.currentNote.alarmTime = date;
 		saveData();
 	}
 
@@ -120,29 +125,29 @@ public class EditPresenter implements MvpEdit.ProvidedPresenter, MvpEdit.Require
 	public void saveData() {
 		needSave = true;
 		if (System.currentTimeMillis() - lastTimeUpdate > WAITING_TIME) {
-			model.saveNote(this.noteItem);
+			model.saveNote(this.currentNote);
 			lastTimeUpdate = System.currentTimeMillis();
 		}
 	}
 
 	@Override
 	public void forceSave() {
-		Log.d(TAG, "forceSave: " + this.noteItem);
+		Log.d(TAG, "forceSave: " + this.currentNote);
 		Log.d(TAG, "forceSave: " + needSave);
 		if (needSave) {
-			model.saveNote(this.noteItem);
+			model.saveNote(this.currentNote);
 		}
 	}
 
 	@Override
 	public void setNoteItemData(NoteItem noteItemData) {
-		this.noteItem = noteItemData;
+		this.currentNote = noteItemData;
 	}
 
 	@Override
 	public void deleteNoteById() {
 		needSave = false;
-		model.deleteNote(this.noteItem);
+		model.deleteNote(this.currentNote);
 	}
 
 	@Override
@@ -153,7 +158,7 @@ public class EditPresenter implements MvpEdit.ProvidedPresenter, MvpEdit.Require
 	@Override
 	public void loadNextNote() {
 		for (int i = 0; i < this.noteItemList.size(); i++) {
-			if (this.noteItem.id == this.noteItemList.get(i).id) {
+			if (this.currentNote.id == this.noteItemList.get(i).id) {
 				Context context = getView().getActivityContext();
 				context.startActivity(EditActivity.getStartIntent(context, this.noteItemList.get(i + 1)));
 				((Activity) context).finish();
@@ -165,7 +170,7 @@ public class EditPresenter implements MvpEdit.ProvidedPresenter, MvpEdit.Require
 	@Override
 	public void loadPreviousNote() {
 		for (int i = 0; i < this.noteItemList.size(); i++) {
-			if (this.noteItem.id == this.noteItemList.get(i).id) {
+			if (this.currentNote.id == this.noteItemList.get(i).id) {
 				Context context = getView().getActivityContext();
 				context.startActivity(EditActivity.getStartIntent(context, this.noteItemList.get(i - 1)));
 				((Activity) context).finish();

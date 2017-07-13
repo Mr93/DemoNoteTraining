@@ -2,6 +2,7 @@ package com.example.anhnd2.demonotetraining.activities;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -9,6 +10,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatDialog;
@@ -46,6 +48,7 @@ public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredV
 
 	public static final String TAG = EditActivity.class.getSimpleName();
 	private static final int REQUEST_IMAGE_CAPTURE = 1;
+	private static final int REQUEST_IMAGE_GALLERY = 2;
 	private static String EXTRA_NOTE_ITEM = "extra_note_item";
 	private MvpEdit.ProvidedPresenter providedPresenter;
 	private TextView txtCreatedTime, txtAlarm, txtDatePicker, txtTimePicker;
@@ -72,10 +75,15 @@ public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredV
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_edit);
-		setupMvp();
 		initView();
 		initBottomNavigationBar();
+		setupMvp();
 		getDataFromPresenter();
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
 	}
 
 	@Override
@@ -90,9 +98,15 @@ public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredV
 		if (requestCode == REQUEST_IMAGE_CAPTURE) {
 			if (resultCode == RESULT_OK) {
 				providedPresenter.updateImage(tempImagePath);
-				showImageOfNoteAdapter.addImagePath(tempImagePath);
+				Log.d(TAG, "onActivityResult: " + tempImagePath);
+//				showImageOfNoteAdapter.addImagePath(tempImagePath);
 			} else {
 				Utils.deleteFile(tempImagePath);
+			}
+		} else if (requestCode == REQUEST_IMAGE_GALLERY) {
+			if (resultCode == RESULT_OK) {
+				Uri imageUri = data.getData();
+				providedPresenter.updateImage(imageUri.toString());
 			}
 		}
 	}
@@ -173,9 +187,7 @@ public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredV
 			txtTimePicker.setText(dateFormat.format(noteItem.alarmTime));
 		}
 		Log.d(TAG, "displayData: " + noteItem.bitmapPathList.size());
-		if (noteItem.bitmapPathList.size() != 0) {
-			showImageOfNoteAdapter.setListImagePath(noteItem.bitmapPathList);
-		}
+		showImageOfNoteAdapter.setListImagePath(noteItem.bitmapPathList);
 		scrollViewContainContent.setEnabled(true);
 		addTextWatcherForEditTextContent();
 		addTextWatcherForEditTextTitle();
@@ -307,6 +319,24 @@ public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredV
 	}
 
 	private void addPictureForNote() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle(R.string.menu_capture)
+				.setPositiveButton(R.string.action_capture, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialogInterface, int i) {
+						handleCapture();
+					}
+				})
+				.setNegativeButton(R.string.action_chose_from_gallery, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialogInterface, int i) {
+						handleChoseFromGallery();
+					}
+				})
+				.show();
+	}
+
+	private void handleCapture() {
 		if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
 			Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 			if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -327,6 +357,12 @@ public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredV
 		}
 	}
 
+	private void handleChoseFromGallery() {
+		Intent intent = new Intent(Intent.ACTION_PICK);
+		intent.setType("image/*");
+		startActivityForResult(intent, REQUEST_IMAGE_GALLERY);
+	}
+
 	private void showChoseColorDialog() {
 		final Dialog dialog = new AppCompatDialog(this);
 		dialog.setContentView(R.layout.dialog_chose_color);
@@ -336,8 +372,9 @@ public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredV
 		gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-				providedPresenter.updateColor((int) adapterView.getItemIdAtPosition(i));
-				scrollViewContainContent.setBackgroundColor((int) adapterView.getItemIdAtPosition(i));
+				int colorId = (int) adapterView.getItemIdAtPosition(i);
+				scrollViewContainContent.setBackgroundColor(colorId);
+				providedPresenter.updateColor(colorId);
 				dialog.dismiss();
 			}
 		});
@@ -347,6 +384,10 @@ public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredV
 	private void createNewNote() {
 		startActivity(getStartIntent(this));
 		finish();
+	}
+
+	public void removeImage(int index) {
+		providedPresenter.removeImage(index);
 	}
 
 }

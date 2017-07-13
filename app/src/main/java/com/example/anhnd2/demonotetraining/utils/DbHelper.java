@@ -112,10 +112,8 @@ public class DbHelper extends SQLiteOpenHelper {
 		contentValues.put(NOTE_COLUMN_CONTENT, noteItem.content);
 		contentValues.put(NOTE_COLUMN_CREATED_TIME, noteItem.createdTime.toString());
 		contentValues.put(NOTE_COLUMN_COLOR_ID, noteItem.colorId);
-		if (noteItem.bitmapPathList.size() != 0) {
-			contentValues.put(NOTE_COLUMN_IMAGE_LIST, Utils.serialize(noteItem.bitmapPathList.toArray(new String[noteItem
-					.bitmapPathList.size()])));
-		}
+		contentValues.put(NOTE_COLUMN_IMAGE_LIST, Utils.serialize(noteItem.bitmapPathList.toArray(new String[noteItem
+				.bitmapPathList.size()])));
 		if (noteItem.alarmTime != null) {
 			contentValues.put(NOTE_COLUMN_ALARM_TIME, noteItem.alarmTime.toString());
 		}

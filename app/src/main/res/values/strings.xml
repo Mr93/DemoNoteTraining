@@ -8,4 +8,7 @@
     <string name="menu_chose_color">Chose color</string>
     <string name="menu_save">Save</string>
     <string name="share">Share</string>
+    <string name="action_capture">Capture</string>
+    <string name="action_chose_from_gallery">Chose from gallery</string>
+
 </resources>

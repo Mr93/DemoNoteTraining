@@ -28,6 +28,8 @@ public interface MvpEdit {
 
 		void updateImage(String imagePath);
 
+		void removeImage(int index);
+
 		void updateAlarm(Date date);
 
 		void saveData();
