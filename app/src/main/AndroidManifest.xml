@@ -41,6 +41,9 @@
         <activity android:name=".activities.EditActivity"
             android:parentActivityName=".activities.MainActivity">
         </activity>
+
+        <receiver android:name=".broadcastreceivers.AlarmBroadcastReceiver">
+        </receiver>
     </application>
 
 </manifest>

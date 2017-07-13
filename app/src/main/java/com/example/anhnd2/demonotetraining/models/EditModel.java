@@ -43,8 +43,24 @@ public class EditModel implements MvpEdit.ProvidedModel {
 	}
 
 	@Override
-	public void getNoteById(int id) {
+	public void notifyShowNoteById(int id) {
+		final NoteItem noteItem = new NoteItem();
+		noteItem.id = id;
+		new AsyncTask<Void, Void, NoteItem>() {
+			@Override
+			protected NoteItem doInBackground(Void... voids) {
+				NoteItem temp = DbHelper.getInstance(MyApplication.getContext()).getNote(noteItem);
+				temp.alarmTime = null;
+				DbHelper.getInstance(MyApplication.getContext()).updateNote(temp);
+				return temp;
+			}
 
+			@Override
+			protected void onPostExecute(NoteItem result) {
+				super.onPostExecute(result);
+				presenter.onNoteNotificationFetched(result);
+			}
+		}.execute();
 	}
 
 	@Override

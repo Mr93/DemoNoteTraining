@@ -1,14 +1,18 @@
 package com.example.anhnd2.demonotetraining.presenters;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.content.Context;
 import android.util.Log;
 
 import com.example.anhnd2.demonotetraining.activities.EditActivity;
+import com.example.anhnd2.demonotetraining.application.MyApplication;
 import com.example.anhnd2.demonotetraining.beans.NoteItem;
+import com.example.anhnd2.demonotetraining.broadcastreceivers.AlarmBroadcastReceiver;
 import com.example.anhnd2.demonotetraining.interfaces.MvpEdit;
 
 import java.lang.ref.WeakReference;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -26,6 +30,7 @@ public class EditPresenter implements MvpEdit.ProvidedPresenter, MvpEdit.Require
 	private long lastTimeUpdate = 0;
 	private final long WAITING_TIME = 0;
 	private boolean needSave = false;
+	private Calendar calendar = Calendar.getInstance();
 
 	public EditPresenter(MvpEdit.RequiredView requiredView) {
 		this.viewWeakReference = new WeakReference<MvpEdit.RequiredView>(requiredView);
@@ -47,14 +52,20 @@ public class EditPresenter implements MvpEdit.ProvidedPresenter, MvpEdit.Require
 	}
 
 	@Override
+	public void notifyShowNoteById(int id) {
+		model.notifyShowNoteById(id);
+	}
+
+	@Override
 	public void onNewNoteCreated(NoteItem noteItem) {
 		this.currentNote = noteItem;
 		getView().displayData(noteItem);
 	}
 
 	@Override
-	public void onNoteFetched(NoteItem noteItem) {
+	public void onNoteNotificationFetched(NoteItem noteItem) {
 		this.currentNote = noteItem;
+		//getView().displayData(noteItem);
 	}
 
 	@Override
@@ -71,8 +82,6 @@ public class EditPresenter implements MvpEdit.ProvidedPresenter, MvpEdit.Require
 	@Override
 	public void onNoteListLoaded(List<NoteItem> noteItemList) {
 		this.noteItemList = noteItemList;
-		Log.d(TAG, "onNoteListLoaded: " + this.noteItemList.toString());
-		Log.d(TAG, "onNoteListLoaded: " + this.currentNote.toString());
 		if (this.noteItemList.size() == 1) {
 			getView().disableBackButton();
 			getView().disableForwardButton();
@@ -116,8 +125,26 @@ public class EditPresenter implements MvpEdit.ProvidedPresenter, MvpEdit.Require
 	}
 
 	@Override
-	public void updateAlarm(Date date) {
-		this.currentNote.alarmTime = date;
+	public void updateDateAlarm(Date date) {
+		calendar.setTime(date);
+		this.currentNote.alarmTime = calendar.getTime();
+		Log.d(TAG, "updateDateAlarm: " + this.currentNote.alarmTime);
+		saveData();
+	}
+
+	@Override
+	public void updateTimeAlarm(int hour, int min) {
+		calendar.set(Calendar.HOUR_OF_DAY, hour);
+		calendar.set(Calendar.MINUTE, min);
+		calendar.set(Calendar.SECOND, 0);
+		this.currentNote.alarmTime = calendar.getTime();
+		Log.d(TAG, "updateTimeAlarm: " + this.currentNote.alarmTime);
+		saveData();
+	}
+
+	@Override
+	public void removeAlarm() {
+		this.currentNote.alarmTime = null;
 		saveData();
 	}
 
@@ -132,10 +159,14 @@ public class EditPresenter implements MvpEdit.ProvidedPresenter, MvpEdit.Require
 
 	@Override
 	public void forceSave() {
-		Log.d(TAG, "forceSave: " + this.currentNote);
-		Log.d(TAG, "forceSave: " + needSave);
 		if (needSave) {
 			model.saveNote(this.currentNote);
+		}
+		if (this.currentNote.alarmTime != null) {
+			AlarmManager alarmManager = (AlarmManager) MyApplication.getContext().getSystemService(Context.ALARM_SERVICE);
+			alarmManager.set(AlarmManager.RTC_WAKEUP, this.currentNote.alarmTime.getTime(), AlarmBroadcastReceiver
+					.getPendingIntent(getView().getActivityContext(), this.currentNote.title, this.currentNote.content,
+							this.currentNote.id));
 		}
 	}
 

@@ -85,16 +85,14 @@
                     android:paddingLeft="@dimen/padding_note_item"
                     android:visibility="gone">
 
-                    <TextView
+                    <Spinner
                         android:id="@+id/date_picker"
-                        style="@style/Base.Widget.AppCompat.Spinner"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Aug 20, 2012"/>
 
-                    <TextView
+                    <Spinner
                         android:id="@+id/time_picker"
-                        style="@style/Base.Widget.AppCompat.Spinner"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Aug 20, 2012"/>

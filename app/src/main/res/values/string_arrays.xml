@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="date_picker">
+        <item>Today</item>
+        <item>Tomorrow</item>
+        <item>Next Thursday</item>
+        <item>Other...</item>
+    </string-array>
+    <string-array name="time_picker">
+        <item>09:00</item>
+        <item>13:00</item>
+        <item>17:00</item>
+        <item>20:00</item>
+        <item>Other...</item>
+    </string-array>
+</resources>

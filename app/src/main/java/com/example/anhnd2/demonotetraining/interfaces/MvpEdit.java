@@ -20,6 +20,8 @@ public interface MvpEdit {
 
 		void createNewNote();
 
+		void notifyShowNoteById(int id);
+
 		void updateTitle(String title);
 
 		void updateContent(String content);
@@ -30,7 +32,11 @@ public interface MvpEdit {
 
 		void removeImage(int index);
 
-		void updateAlarm(Date date);
+		void updateDateAlarm(Date date);
+
+		void updateTimeAlarm(int hour, int min);
+
+		void removeAlarm();
 
 		void saveData();
 
@@ -50,7 +56,7 @@ public interface MvpEdit {
 	interface ProvidedModel {
 		void createNewNote();
 
-		void getNoteById(int id);
+		void notifyShowNoteById(int id);
 
 		void saveNote(NoteItem noteItem);
 
@@ -62,7 +68,7 @@ public interface MvpEdit {
 	interface RequiredPresenter {
 		void onNewNoteCreated(NoteItem noteItem);
 
-		void onNoteFetched(NoteItem noteItem);
+		void onNoteNotificationFetched(NoteItem noteItem);
 
 		void onNoteUpdated();
 

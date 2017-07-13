@@ -12,6 +12,7 @@ import android.util.Log;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -62,5 +63,31 @@ public class Utils {
 		File file = new File(path);
 		boolean check = file.delete();
 		Log.d(TAG, "deleteFile: " + check);
+	}
+
+	public static Date getCurrentDate() {
+		return Calendar.getInstance().getTime();
+	}
+
+	public static Date getTomorrow() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.DATE, 1);
+		return calendar.getTime();
+	}
+
+	public static Date getNextThursday() {
+		int currentDay = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+		int plusDay = 0;
+		while (currentDay != Calendar.THURSDAY) {
+			if (currentDay == Calendar.SATURDAY) {
+				currentDay = Calendar.SUNDAY;
+			} else {
+				currentDay++;
+			}
+			plusDay++;
+		}
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.DATE, plusDay);
+		return calendar.getTime();
 	}
 }
