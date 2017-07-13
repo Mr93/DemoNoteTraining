@@ -8,6 +8,7 @@ import android.os.Parcelable;
 import com.example.anhnd2.demonotetraining.R;
 import com.example.anhnd2.demonotetraining.application.MyApplication;
 
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Date;
 import java.util.List;
@@ -23,7 +24,7 @@ public class NoteItem implements Parcelable {
 	public String content = MyApplication.getContext().getString(R.string.default_content);
 	public Date createdTime = new Date(System.currentTimeMillis());
 	public int colorId = MyApplication.getContext().getResources().getColor(R.color.colorYellow);
-	public List<String> bitmapPathList;
+	public List<String> bitmapPathList = new ArrayList<>();
 	public Date alarmTime;
 
 

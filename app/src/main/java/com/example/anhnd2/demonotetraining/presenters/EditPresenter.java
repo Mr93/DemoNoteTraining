@@ -105,8 +105,8 @@ public class EditPresenter implements MvpEdit.ProvidedPresenter, MvpEdit.Require
 	}
 
 	@Override
-	public void updateImage(List<String> bitmapPathList) {
-		this.noteItem.bitmapPathList = bitmapPathList;
+	public void updateImage(String imagePath) {
+		this.noteItem.bitmapPathList.add(imagePath);
 		saveData();
 	}
 

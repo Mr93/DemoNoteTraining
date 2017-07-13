@@ -26,7 +26,7 @@ public interface MvpEdit {
 
 		void updateColor(int colorId);
 
-		void updateImage(List<String> bitmapPathList);
+		void updateImage(String imagePath);
 
 		void updateAlarm(Date date);
 

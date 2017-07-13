@@ -3,6 +3,12 @@ package com.example.anhnd2.demonotetraining.activities;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatDialog;
@@ -29,13 +35,17 @@ import com.example.anhnd2.demonotetraining.models.EditModel;
 import com.example.anhnd2.demonotetraining.presenters.EditPresenter;
 import com.example.anhnd2.demonotetraining.utils.Utils;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredView, View.OnClickListener {
 
 	public static final String TAG = EditActivity.class.getSimpleName();
-	private static String EXTRA_NOTE_ID = "extra_note_id";
+	private static final int REQUEST_IMAGE_CAPTURE = 1;
 	private static String EXTRA_NOTE_ITEM = "extra_note_item";
 	private MvpEdit.ProvidedPresenter providedPresenter;
 	private TextView txtCreatedTime, txtAlarm, txtDatePicker, txtTimePicker;
@@ -45,15 +55,10 @@ public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredV
 	private ScrollView scrollViewContainContent;
 	private GridView gridViewImageForNote;
 	private ShowImageOfNoteAdapter showImageOfNoteAdapter;
+	private String tempImagePath;
 
 	public static Intent getStartIntent(Context context) {
 		Intent intent = new Intent(context, EditActivity.class);
-		return intent;
-	}
-
-	public static Intent getStartIntent(Context context, int noteId) {
-		Intent intent = new Intent(context, EditActivity.class);
-		intent.putExtra(EXTRA_NOTE_ID, noteId);
 		return intent;
 	}
 
@@ -81,6 +86,18 @@ public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredV
 	}
 
 	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == REQUEST_IMAGE_CAPTURE) {
+			if (resultCode == RESULT_OK) {
+				providedPresenter.updateImage(tempImagePath);
+				showImageOfNoteAdapter.addImagePath(tempImagePath);
+			} else {
+				Utils.deleteFile(tempImagePath);
+			}
+		}
+	}
+
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.menu_edit, menu);
 		if (llBottomNavigationBar.getVisibility() == View.GONE) {
@@ -94,6 +111,7 @@ public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredV
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.menu_capture:
+				addPictureForNote();
 				break;
 			case R.id.menu_chose_color:
 				showChoseColorDialog();
@@ -154,9 +172,9 @@ public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredV
 			dateFormat = new SimpleDateFormat("hh:mm");
 			txtTimePicker.setText(dateFormat.format(noteItem.alarmTime));
 		}
-		if (noteItem.bitmapPathList != null){
+		Log.d(TAG, "displayData: " + noteItem.bitmapPathList.size());
+		if (noteItem.bitmapPathList.size() != 0) {
 			showImageOfNoteAdapter.setListImagePath(noteItem.bitmapPathList);
-			showImageOfNoteAdapter.notifyDataSetChanged();
 		}
 		scrollViewContainContent.setEnabled(true);
 		addTextWatcherForEditTextContent();
@@ -215,7 +233,7 @@ public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredV
 		imgHideDateTimePicker.setOnClickListener(this);
 		editTextTitle = (EditText) findViewById(R.id.edit_text_title_edit_activity);
 		editTextContent = (EditText) findViewById(R.id.edit_text_content_edit_activity);
-		gridViewImageForNote = (GridView)findViewById(R.id.grid_view_image_edit_note);
+		gridViewImageForNote = (GridView) findViewById(R.id.grid_view_image_edit_note);
 		showImageOfNoteAdapter = new ShowImageOfNoteAdapter(this);
 		gridViewImageForNote.setAdapter(showImageOfNoteAdapter);
 	}
@@ -288,6 +306,27 @@ public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredV
 		});
 	}
 
+	private void addPictureForNote() {
+		if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
+			Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+			if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+				File photoFile = null;
+				try {
+					photoFile = Utils.createImageFile(this);
+				} catch (IOException ex) {
+					Log.e(TAG, "addPictureForNote: ", ex);
+				}
+				if (photoFile != null) {
+					tempImagePath = photoFile.getAbsolutePath();
+					Uri photoURI = FileProvider.getUriForFile(this, getApplicationContext().getPackageName(), photoFile);
+					Utils.grantUriPermission(this, takePictureIntent, photoURI);
+					takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+					startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+				}
+			}
+		}
+	}
+
 	private void showChoseColorDialog() {
 		final Dialog dialog = new AppCompatDialog(this);
 		dialog.setContentView(R.layout.dialog_chose_color);
@@ -305,7 +344,7 @@ public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredV
 		dialog.show();
 	}
 
-	private void createNewNote(){
+	private void createNewNote() {
 		startActivity(getStartIntent(this));
 		finish();
 	}

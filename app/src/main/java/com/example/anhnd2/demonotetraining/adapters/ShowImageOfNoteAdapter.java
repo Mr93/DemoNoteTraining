@@ -2,11 +2,16 @@ package com.example.anhnd2.demonotetraining.adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.GridView;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -48,30 +53,40 @@ public class ShowImageOfNoteAdapter extends BaseAdapter {
 	@Override
 	public View getView(int i, View view, ViewGroup viewGroup) {
 		View item;
-		if (view == null){
-			item = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_note, viewGroup, false);
-		}else {
+		if (view == null) {
+			item = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_image_grid_view_edit_note, viewGroup, false);
+		} else {
 			item = view;
 		}
-		ImageView imageView = (ImageView) item.findViewById(R.id.image_content);
-		ImageView imageViewDelete = (ImageView) item.findViewById(R.id.icon_delete_image);
-		Glide.with((Activity)this.context).load(new File(listImagePath.get(i))).into(imageView);
-		imageViewDelete.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				Log.d(TAG, "onClick: " + view.getId());
-			}
-		});
+		ImageView imageView = item.findViewById(R.id.image_content);
+		ImageView imageViewDelete = item.findViewById(R.id.icon_delete_image);
+		final Uri uri = Uri.fromFile(new File(listImagePath.get(i)));
+		Glide.with(viewGroup.getContext()).load(uri).into(imageView);
 		imageView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				Log.d(TAG, "onClick: " + view.getId());
+				Intent intent = new Intent();
+				intent.setAction(Intent.ACTION_VIEW);
+				intent.setDataAndType(uri, "image/*");
+				context.startActivity(intent);
 			}
 		});
-		return null;
+		imageViewDelete.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				Log.d(TAG, "onClick: bbbbb");
+			}
+		});
+		return item;
 	}
 
 	public void setListImagePath(List<String> listImagePath) {
 		this.listImagePath = listImagePath;
+		this.notifyDataSetChanged();
+	}
+
+	public void addImagePath(String imagePath) {
+		this.listImagePath.add(imagePath);
+		this.notifyDataSetChanged();
 	}
 }
