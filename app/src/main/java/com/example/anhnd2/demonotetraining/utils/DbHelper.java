@@ -3,10 +3,8 @@ package com.example.anhnd2.demonotetraining.utils;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -15,7 +13,6 @@ import com.example.anhnd2.demonotetraining.beans.NoteItem;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by anhnd2 on 7/11/2017.

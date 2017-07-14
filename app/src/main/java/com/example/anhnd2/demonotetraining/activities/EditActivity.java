@@ -8,12 +8,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.app.AppCompatDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -38,8 +38,7 @@ import com.example.anhnd2.demonotetraining.adapters.ChoseColorAdapter;
 import com.example.anhnd2.demonotetraining.adapters.ShowImageOfNoteAdapter;
 import com.example.anhnd2.demonotetraining.beans.NoteItem;
 import com.example.anhnd2.demonotetraining.interfaces.MvpEdit;
-import com.example.anhnd2.demonotetraining.models.EditModel;
-import com.example.anhnd2.demonotetraining.presenters.EditPresenter;
+import com.example.anhnd2.demonotetraining.presenters.factories.EditPresenterFactory;
 import com.example.anhnd2.demonotetraining.utils.Constants;
 import com.example.anhnd2.demonotetraining.utils.Utils;
 
@@ -202,20 +201,19 @@ public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredV
 		initView();
 		initSpinner();
 		initBottomNavigationBar();
-		setupMvp();
+		providedPresenter = EditPresenterFactory.getInstance().getPresenter(this);
 		getDataFromPresenter();
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		Log.d(TAG, "onResume: aaaa");
+
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
-		Log.d(TAG, "onStop: ");
 		providedPresenter.forceSave();
 	}
 
@@ -224,8 +222,6 @@ public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredV
 		if (requestCode == REQUEST_IMAGE_CAPTURE) {
 			if (resultCode == RESULT_OK) {
 				providedPresenter.updateImage(tempImagePath);
-				Log.d(TAG, "onActivityResult: " + tempImagePath);
-//				showImageOfNoteAdapter.addImagePath(tempImagePath);
 			} else {
 				Utils.deleteFile(tempImagePath);
 			}
@@ -320,7 +316,6 @@ public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredV
 	@Override
 	public void noteUpdated() {
 
-//		Toast.makeText(this, "Note saved", Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
@@ -347,11 +342,6 @@ public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredV
 	@Override
 	public Context getActivityContext() {
 		return this;
-	}
-
-	private void setupMvp() {
-		providedPresenter = new EditPresenter(this);
-		providedPresenter.setModel(new EditModel((MvpEdit.RequiredPresenter) providedPresenter));
 	}
 
 	private void initView() {
@@ -423,6 +413,7 @@ public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredV
 			providedPresenter.loadListDataForPresenter();
 		} else {
 			providedPresenter.createNewNote();
+			providedPresenter.loadListDataForPresenter();
 			llBottomNavigationBar.setVisibility(View.GONE);
 		}
 	}
