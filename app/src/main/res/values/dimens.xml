@@ -19,7 +19,8 @@
 
     <dimen name="size_grid_view_color_item">64dp</dimen>
     <dimen name="height_icon_delete_image">36dp</dimen>
-
+    <dimen name="card_view_elevation">4dp</dimen>
+    <dimen name="card_corner_radius">4dp</dimen>
 
 
 </resources>

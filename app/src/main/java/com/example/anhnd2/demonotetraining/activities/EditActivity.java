@@ -40,6 +40,7 @@ import com.example.anhnd2.demonotetraining.beans.NoteItem;
 import com.example.anhnd2.demonotetraining.interfaces.MvpEdit;
 import com.example.anhnd2.demonotetraining.models.EditModel;
 import com.example.anhnd2.demonotetraining.presenters.EditPresenter;
+import com.example.anhnd2.demonotetraining.presenters.factories.EditPresenterFactory;
 import com.example.anhnd2.demonotetraining.utils.Constants;
 import com.example.anhnd2.demonotetraining.utils.Utils;
 
@@ -202,20 +203,19 @@ public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredV
 		initView();
 		initSpinner();
 		initBottomNavigationBar();
-		setupMvp();
+		providedPresenter = EditPresenterFactory.getInstance().getPresenter(this);
 		getDataFromPresenter();
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		Log.d(TAG, "onResume: aaaa");
+
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
-		Log.d(TAG, "onStop: ");
 		providedPresenter.forceSave();
 	}
 
@@ -423,6 +423,7 @@ public class EditActivity extends AppCompatActivity implements MvpEdit.RequiredV
 			providedPresenter.loadListDataForPresenter();
 		} else {
 			providedPresenter.createNewNote();
+			providedPresenter.loadListDataForPresenter();
 			llBottomNavigationBar.setVisibility(View.GONE);
 		}
 	}

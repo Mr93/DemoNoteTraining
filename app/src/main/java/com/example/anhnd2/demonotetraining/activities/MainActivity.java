@@ -19,6 +19,7 @@ import com.example.anhnd2.demonotetraining.beans.NoteItem;
 import com.example.anhnd2.demonotetraining.interfaces.MvpMain;
 import com.example.anhnd2.demonotetraining.models.MainModel;
 import com.example.anhnd2.demonotetraining.presenters.MainPresenter;
+import com.example.anhnd2.demonotetraining.presenters.factories.MainPresenterFactory;
 
 import java.util.List;
 
@@ -37,14 +38,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 		getSupportActionBar().setDisplayShowTitleEnabled(false);
-		setupMvp();
+		presenter = MainPresenterFactory.getInstance().getMainPresenter(this);
 		initView();
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		presenter.getNoteItemList();
 	}
 
 	@Override
@@ -73,10 +73,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 	@Override
 	public void displayNoteList(List<NoteItem> noteItemList) {
-		if (noteAdapter == null){
+		if (noteAdapter == null) {
 			noteAdapter = new NoteAdapter(noteItemList);
 			recyclerView.setAdapter(noteAdapter);
-		}else {
+		} else {
 			noteAdapter.setNoteItemList(noteItemList);
 			noteAdapter.notifyDataSetChanged();
 		}
