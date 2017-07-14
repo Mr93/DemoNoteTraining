@@ -65,7 +65,7 @@ public class EditPresenter implements MvpEdit.ProvidedPresenter, MvpEdit.Require
 	@Override
 	public void onNoteNotificationFetched(NoteItem noteItem) {
 		this.currentNote = noteItem;
-		//getView().displayData(noteItem);
+		getView().displayData(noteItem);
 	}
 
 	@Override

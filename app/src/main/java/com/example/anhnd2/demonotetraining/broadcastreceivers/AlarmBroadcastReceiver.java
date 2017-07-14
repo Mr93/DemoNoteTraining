@@ -29,7 +29,7 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
 		intent.putExtra(EXTRA_CONTENT, content);
 		intent.putExtra(EXTRA_ID, requestCode);
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(MyApplication.getContext(), requestCode,
-				intent, 0);
+				intent, PendingIntent.FLAG_UPDATE_CURRENT);
 		return pendingIntent;
 	}
 
@@ -43,10 +43,12 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
 		if (intent.getStringExtra(EXTRA_CONTENT) != null) {
 			content = intent.getStringExtra(EXTRA_CONTENT);
 		}
+		Log.d(TAG, "onReceive: " + extraId);
 		NotificationCompat.Builder mBuilder =
 				new NotificationCompat.Builder(context)
 						.setSmallIcon(R.drawable.icon_note)
 						.setContentTitle(title)
+						.setAutoCancel(true)
 						.setContentText(content);
 		PendingIntent pendingIntent = PendingIntent.getActivity(context, extraId, EditActivity.getStartIntent(context, extraId),
 				PendingIntent.FLAG_UPDATE_CURRENT);
