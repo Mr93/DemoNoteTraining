@@ -17,5 +17,9 @@
     <dimen name="text_size_created_date_edit_activity">20sp</dimen>
     <dimen name="text_size_alarm_edit_activity">20sp</dimen>
 
+    <dimen name="size_grid_view_color_item">64dp</dimen>
+    <dimen name="height_icon_delete_image">36dp</dimen>
+
+
 
 </resources>

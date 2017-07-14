@@ -15,9 +15,12 @@ import android.view.WindowManager;
 
 import com.example.anhnd2.demonotetraining.R;
 import com.example.anhnd2.demonotetraining.adapters.NoteAdapter;
+import com.example.anhnd2.demonotetraining.beans.NoteItem;
 import com.example.anhnd2.demonotetraining.interfaces.MvpMain;
 import com.example.anhnd2.demonotetraining.models.MainModel;
 import com.example.anhnd2.demonotetraining.presenters.MainPresenter;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, MvpMain.RequiredView {
 
@@ -36,6 +39,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		getSupportActionBar().setDisplayShowTitleEnabled(false);
 		setupMvp();
 		initView();
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		presenter.getNoteItemList();
 	}
 
 	@Override
@@ -62,16 +71,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		}
 	}
 
+	@Override
+	public void displayNoteList(List<NoteItem> noteItemList) {
+		if (noteAdapter == null){
+			noteAdapter = new NoteAdapter(noteItemList);
+			recyclerView.setAdapter(noteAdapter);
+		}else {
+			noteAdapter.setNoteItemList(noteItemList);
+			noteAdapter.notifyDataSetChanged();
+		}
+	}
+
 	private void setupMvp() {
 		presenter = new MainPresenter(this);
 		presenter.setModel(new MainModel((MvpMain.RequiredPresenter) presenter));
 	}
 
 	private void initView() {
-		noteAdapter = new NoteAdapter(presenter.getNoteItemList());
+		presenter.getNoteItemList();
 		recyclerView = (RecyclerView) findViewById(R.id.recycler_view_main);
 		RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 2);
 		recyclerView.setLayoutManager(layoutManager);
-		recyclerView.setAdapter(noteAdapter);
 	}
 }
