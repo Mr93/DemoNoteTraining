@@ -1,7 +1,6 @@
 package com.example.anhnd2.demonotetraining.adapters;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +13,6 @@ import com.example.anhnd2.demonotetraining.activities.EditActivity;
 import com.example.anhnd2.demonotetraining.beans.NoteItem;
 import com.example.anhnd2.demonotetraining.utils.Utils;
 
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 

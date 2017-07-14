@@ -1,11 +1,8 @@
 package com.example.anhnd2.demonotetraining.presenters.factories;
 
-import com.example.anhnd2.demonotetraining.interfaces.MvpEdit;
 import com.example.anhnd2.demonotetraining.interfaces.MvpMain;
 import com.example.anhnd2.demonotetraining.models.MainModel;
 import com.example.anhnd2.demonotetraining.presenters.MainPresenter;
-
-import javax.net.ssl.ManagerFactoryParameters;
 
 /**
  * Created by anhnd2 on 7/14/2017.

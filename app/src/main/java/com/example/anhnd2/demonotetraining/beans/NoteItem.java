@@ -1,7 +1,5 @@
 package com.example.anhnd2.demonotetraining.beans;
 
-import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -9,7 +7,6 @@ import com.example.anhnd2.demonotetraining.R;
 import com.example.anhnd2.demonotetraining.application.MyApplication;
 
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.Date;
 import java.util.List;
 
